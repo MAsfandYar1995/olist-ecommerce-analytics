@@ -308,6 +308,31 @@ There is an attribution limitation in this analysis. Reviews and fulfillment out
 
 [View the analytical model](models/gold/analytics/product_category_performance_and_concentration.sql)
 
+---
+
+### 6. Do customers show meaningful cross-category purchase affinity?
+
+To understand whether customers tend to buy products from different categories together, I analysed unique category combinations within each order and calculated support, directional confidence, and lift. Categories labelled as `Unknown` were excluded, and only pairs appearing together in at least 5 orders were retained to reduce noise from one-off combinations.
+
+Only **786 of 98,666 orders (0.8%)** contained products from more than one category, indicating that cross-category purchasing was uncommon.
+
+Among **36 recurring category pairs**, only one showed positive affinity:
+
+| Category A                | Category B        | Orders Together | Confidence A → B | Confidence B → A | Lift |
+| ------------------------- | ----------------- | --------------: | ---------------: | ---------------: | ---: |
+| Bed, Bath & Table         | Home Comfort      |              43 |            0.46% |           10.83% | 1.12 |
+| Construction Tools Lights | Furniture & Decor |              11 |            4.51% |            0.17% | 0.68 |
+| Furniture & Decor         | Home Construction |              13 |            0.20% |            2.65% | 0.40 |
+
+The most frequently purchased category pair was **Bed, Bath & Table + Furniture & Decor**, appearing together in 70 orders. However, its lift was only **0.11**, showing that high co-occurrence was largely driven by the popularity of the individual categories rather than genuine affinity.
+
+The strongest relationship was **Home Comfort → Bed, Bath & Table**. Around **10.83% of Home Comfort orders** also contained Bed, Bath & Table products, with a lift of **1.12**.
+
+**Business implication:** The data provides little evidence to support broad cross-category bundling or recommendation strategies. A targeted Home Comfort to Bed, Bath & Table cross-sell could be tested, but merchandising efforts are likely to have greater impact by improving product discovery and complementary recommendations within individual categories.
+
+[View the analytical query](analyses/product/product_category_affinity.sql)
+
+
 ## Recommendations
 
 Taken together, the analyses point to a list of actions to improve the overall business health:
