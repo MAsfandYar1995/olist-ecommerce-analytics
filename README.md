@@ -392,9 +392,8 @@ The project uses `dbt_utils` and the Snowflake semantic view package.
 - The seller and category risk thresholds are analytical segmentation rules created for this project, not official Olist business definitions.
 - Same-day second orders are kept separate from later-day returns because they may represent split transactions rather than genuine repeat behavior.
 - Category-level review and fulfillment analysis uses order-level outcomes, so it shows association rather than category-level causation.
-- The source data is historical public data and the recommendations should be read as analytical conclusions from this dataset, not as claims about Olist's current operations.
 
-## Files worth opening
+## Project Files
 
 - [Power BI dashboard](olist_dashboard.pbix)
 - [Gold dimensional models](models/gold/)
