@@ -1,0 +1,60 @@
+
+version: 2
+
+models:
+
+  # =========================================================
+  # SALES
+  # =========================================================
+
+  - name: semantic_sales
+    description: >
+      Semantic view for Olist sales analysis at order-item grain.
+      Supports analysis of revenue, units sold, freight, orders,
+      customers, products, sellers, and purchase dates.
+
+
+  # =========================================================
+  # PAYMENTS
+  # =========================================================
+
+  - name: semantic_payments
+    description: >
+      Semantic view for Olist payment analysis at payment-sequence
+      grain. Supports analysis of payment amounts, payment methods,
+      installments, customers, orders, and purchase dates.
+
+
+  # =========================================================
+  # REVIEWS
+  # =========================================================
+
+  - name: semantic_reviews
+    description: >
+      Semantic view for Olist customer review analysis at the
+      review-and-order grain. Supports analysis of review scores,
+      review activity, comments, customers, and review dates.
+
+
+  # =========================================================
+  # FULFILLMENT
+  # =========================================================
+
+  - name: semantic_fulfillment
+    description: >
+      Semantic view for Olist order fulfillment and delivery
+      performance at one row per order. Supports analysis of order
+      status, fulfillment duration, shipping delays, delivery delays,
+      and on-time delivery performance.
+
+
+  # =========================================================
+  # MARKETING FUNNEL
+  # =========================================================
+
+  - name: semantic_marketing_funnel
+    description: >
+      Semantic view for Olist seller acquisition and marketing funnel
+      analysis at one row per marketing-qualified lead. Supports
+      analysis of lead sources, conversion, seller acquisition,
+      conversion time, business characteristics, and declared revenue.

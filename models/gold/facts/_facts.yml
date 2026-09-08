@@ -1,0 +1,395 @@
+
+version: 2
+
+models:
+
+  - name: fact_order_items
+    description: "Transaction fact table at one row per order item within an order."
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - order_item_id
+
+    columns:
+      - name: order_id
+        description: "Source-system order identifier."
+        tests:
+          - not_null
+
+      - name: order_item_id
+        description: "Sequence number identifying the item within the order."
+        tests:
+          - not_null
+
+      - name: order_status
+        description: "Current or final status of the order associated with the order item."
+        tests:
+          - not_null
+
+      - name: customer_key
+        description: "Foreign key to dim_customer."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
+
+      - name: product_key
+        description: "Foreign key to dim_product."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_key
+
+      - name: seller_key
+        description: "Foreign key to dim_seller."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_seller')
+                field: seller_key
+
+      - name: order_date_key
+        description: "Foreign key to dim_date representing the order purchase date."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: quantity
+        description: "Quantity represented by the order-item row."
+        tests:
+          - not_null
+
+      - name: item_price
+        description: "Price of the individual order item."
+        tests:
+          - not_null
+
+      - name: freight_amount
+        description: "Freight amount associated with the order item."
+        tests:
+          - not_null
+
+      - name: gross_amount
+        description: "Item price plus freight amount."
+        tests:
+          - not_null
+
+
+  - name: fact_payments
+    description: "Transaction fact table at one row per payment sequence within an order."
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - payment_sequential
+
+    columns:
+      - name: order_id
+        description: "Source-system order identifier."
+        tests:
+          - not_null
+
+      - name: payment_sequential
+        description: "Sequence number identifying the payment within an order."
+        tests:
+          - not_null
+
+      - name: customer_key
+        description: "Foreign key to dim_customer."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
+
+      - name: order_date_key
+        description: "Foreign key to dim_date representing the order purchase date."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: payment_type
+        description: "Payment method used for the payment."
+        tests:
+          - not_null
+
+      - name: payment_installments
+        description: "Number of installments associated with the payment."
+
+      - name: payment_amount
+        description: "Amount associated with the payment record."
+        tests:
+          - not_null
+
+
+  - name: fact_reviews
+    description: "Review fact table at one row per unique review and order combination."
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - review_id
+              - order_id
+
+    columns:
+      - name: review_id
+        description: "Source-system review identifier."
+        tests:
+          - not_null
+
+      - name: order_id
+        description: "Order associated with the review."
+        tests:
+          - not_null
+
+      - name: customer_key
+        description: "Foreign key to dim_customer."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
+
+      - name: review_creation_date_key
+        description: "Foreign key to dim_date representing the review creation date."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: review_answer_date_key
+        description: "Foreign key to dim_date representing the review answer date."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: review_score
+        description: "Customer review score from 1 to 5."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+
+      - name: has_comment_flag
+        description: "1 when the review contains either a comment title or message, otherwise 0."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+
+  - name: fact_order_fulfillment
+    description: "Accumulating snapshot fact table at one row per order, tracking fulfillment milestones and delivery performance."
+
+    columns:
+      - name: order_id
+        description: "Unique order identifier and grain of the fact table."
+        tests:
+          - unique
+          - not_null
+
+      - name: order_status
+        description: "Current or final status of the order."
+        tests:
+          - not_null
+
+      - name: customer_key
+        description: "Foreign key to dim_customer."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
+
+      - name: order_purchase_date_key
+        description: "Foreign key to dim_date representing the order purchase date."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: order_approved_date_key
+        description: "Foreign key to dim_date representing the order approval date."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: order_delivered_carrier_date_key
+        description: "Foreign key to dim_date representing the date the order was handed to the carrier."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: order_delivered_customer_date_key
+        description: "Foreign key to dim_date representing the actual customer delivery date."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: order_estimated_delivery_date_key
+        description: "Foreign key to dim_date representing the estimated customer delivery date."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: order_latest_shipping_limit_date_key
+        description: "Foreign key to dim_date representing the latest shipping deadline across all items in the order."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: approval_days
+        description: "Number of days between order purchase and order approval."
+
+      - name: handoff_days
+        description: "Number of days between order approval and carrier handoff."
+
+      - name: shipping_delay_days
+        description: "Difference between carrier handoff date and the latest shipping deadline. Positive values indicate late handoff."
+
+      - name: delivery_days
+        description: "Number of days between carrier handoff and customer delivery."
+
+      - name: total_fulfillment_days
+        description: "Total number of days between order purchase and customer delivery."
+
+      - name: delivery_delay_days
+        description: "Difference between actual and estimated delivery dates. Positive values indicate late delivery."
+
+      - name: on_time_delivery_flag
+        description: "1 when delivered on or before the estimated date, 0 when delivered late, and NULL when no actual delivery date exists."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+
+  - name: fact_marketing_funnel
+    description: "Marketing funnel fact table at one row per marketing-qualified lead."
+
+    columns:
+      - name: mql_id
+        description: "Unique marketing-qualified lead identifier."
+        tests:
+          - unique
+          - not_null
+
+      - name: first_contact_date_key
+        description: "Foreign key to dim_date representing the lead's first contact date."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: won_date_key
+        description: "Foreign key to dim_date representing the date the lead became a won deal."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: seller_key
+        description: "Foreign key to dim_seller when the converted lead can be matched to an operational Olist marketplace seller."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_seller')
+                field: seller_key
+
+      - name: landing_page_id
+        description: "Identifier of the landing page through which the lead entered the funnel."
+
+      - name: origin
+        description: "Marketing acquisition source or channel."
+
+      - name: sdr_id
+        description: "Identifier of the sales development representative associated with the closed deal."
+
+      - name: sr_id
+        description: "Identifier of the sales representative associated with the closed deal."
+
+      - name: business_segment
+        description: "Business segment associated with the converted lead."
+
+      - name: lead_type
+        description: "Classification assigned to the marketing lead."
+
+      - name: lead_behaviour_profile
+        description: "Behavioural profile assigned to the lead."
+
+      - name: has_company
+        description: "Indicates whether the converted lead reported having a company."
+
+      - name: has_gtin
+        description: "Indicates whether the converted seller reported using GTIN product identifiers."
+
+      - name: average_stock
+        description: "Declared average stock classification."
+
+      - name: business_type
+        description: "Business type associated with the converted lead."
+
+      - name: declared_product_catalog_size
+        description: "Product catalog size declared by the converted lead."
+
+      - name: declared_monthly_revenue_amount
+        description: "Monthly revenue amount declared by the converted lead."
+
+      - name: converted_flag
+        description: "1 when the marketing-qualified lead became a closed deal, otherwise 0."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: activated_seller_flag
+        description: "1 when a converted lead can be matched to an operational seller in the Olist marketplace dataset, otherwise 0."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: days_to_convert
+        description: "Number of days between first contact and won date for converted leads."

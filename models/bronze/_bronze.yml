@@ -1,0 +1,162 @@
+version: 2
+
+models:
+
+  # -------- E-commerce --------
+
+  - name: bronze_customers
+    description: "Raw customer records from Olist e-commerce source."
+    columns:
+      - name: customer_id
+        description: "Per-order customer identifier (PK)."
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: "Stable identifier for a customer across orders."
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        description: "Timestamp when the row was materialized into Bronze."
+        tests:
+          - not_null
+
+  - name: bronze_orders
+    description: "Raw orders with status and fulfillment timestamps."
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_order_items
+    description: "Raw line items per order. Composite PK: order_id + order_item_id."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [order_id, order_item_id]
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: order_item_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: seller_id
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_payments
+    description: "Raw payment transactions. Composite PK: order_id + payment_sequential."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [order_id, payment_sequential]
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: payment_sequential
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_reviews
+    description: "Raw customer reviews. Note: review_id can repeat across orders in the source; uniqueness is enforced in Silver."
+    columns:
+      - name: review_id
+        tests:
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_products
+    description: "Raw product attributes. Source column typos ('lenght') are preserved intentionally and corrected in Silver."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_sellers
+    description: "Raw marketplace seller records."
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_geolocation
+    description: "Raw ZIP-prefix geolocation. Multiple rows per prefix are expected; dedup happens in Silver."
+    columns:
+      - name: geolocation_zip_code_prefix
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_product_category_translation
+    description: "Raw Portuguese-to-English category name mapping."
+    columns:
+      - name: product_category_name
+        tests:
+          - unique
+          - not_null
+      - name: product_category_name_english
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  # -------- Marketing funnel --------
+
+  - name: bronze_qualified_leads
+    description: "Raw marketing-qualified seller leads."
+    columns:
+      - name: mql_id
+        tests:
+          - unique
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null
+
+  - name: bronze_closed_leads
+    description: "Raw won deals from the marketing funnel."
+    columns:
+      - name: mql_id
+        tests:
+          - unique
+          - not_null
+      - name: seller_id
+        tests:
+          - not_null
+      - name: _bronze_loaded_at
+        tests:
+          - not_null

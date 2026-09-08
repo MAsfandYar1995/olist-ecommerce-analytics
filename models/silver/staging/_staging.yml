@@ -1,0 +1,275 @@
+version: 2
+
+models:
+
+  # -------------------------
+  # E-commerce
+  # -------------------------
+
+  - name: stg_customers
+    description: "Cleaned and standardized Olist customer records."
+    columns:
+
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_unique_id
+        tests:
+          - not_null
+
+
+  - name: stg_orders
+    description: "Cleaned and standardized Olist orders."
+    columns:
+
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+
+  - name: stg_order_items
+    description: "Cleaned order line-item records."
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - order_item_id
+
+    columns:
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: seller_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sellers')
+                field: seller_id
+
+      - name: price_amount
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+      - name: freight_value_amount
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+
+  - name: stg_payments
+    description: "Cleaned payment transaction records."
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - payment_sequential
+
+    columns:
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: payment_sequential
+        tests:
+          - not_null
+      
+      - name: payment_amount
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+      - name: payment_installments
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+
+
+
+  - name: stg_reviews
+    description: "Cleaned customer review records."
+
+    tests: 
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - review_id
+              - order_id
+    columns:
+
+      - name: review_id
+        tests:
+          - not_null
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: review_score
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                max_value: 5
+
+
+  - name: stg_products
+    description: "Cleaned and standardized product records."
+    columns:
+
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+      - name: product_weight_g
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+      - name: product_length_cm
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+      - name: product_height_cm
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+      - name: product_width_cm
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+
+
+
+  - name: stg_sellers
+    description: "Cleaned and standardized seller records."
+    columns:
+
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+
+
+  - name: stg_geolocation
+    description: "Cleaned Olist ZIP-prefix geolocation observations."
+    columns:
+
+      - name: zip_code_prefix
+        tests:
+          - not_null
+
+      - name: latitude
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: -90
+                max_value: 90
+
+
+      - name: longitude
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: -180
+                max_value: 180
+      
+
+
+  - name: stg_product_category_translation
+    description: "Cleaned Portuguese-to-English product category mapping."
+    columns:
+
+      - name: product_category_name
+        tests:
+          - unique
+          - not_null
+
+      - name: product_category_name_english
+        tests:
+          - not_null
+
+
+  # -------------------------
+  # Marketing funnel
+  # -------------------------
+
+  - name: stg_qualified_leads
+    description: "Cleaned marketing-qualified lead records."
+    columns:
+
+      - name: mql_id
+        tests:
+          - unique
+          - not_null
+
+
+  - name: stg_closed_leads
+    description: "Cleaned marketing closed-deal records."
+    columns:
+
+      - name: mql_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_qualified_leads')
+                field: mql_id
+
+      - name: seller_id
+        tests:
+          - not_null

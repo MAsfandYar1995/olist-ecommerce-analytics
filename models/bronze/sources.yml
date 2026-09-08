@@ -1,0 +1,76 @@
+version: 2
+
+sources:
+
+  # ---------------------------------------------------------
+  # Olist E-commerce Dataset
+  # ---------------------------------------------------------
+  - name: olist_ecommerce
+    description: "Raw Olist Brazilian e-commerce data loaded from source CSV files."
+    database: OLIST
+    schema: RAW
+
+    # To enable freshness checks, add a load-timestamp column during ingestion
+    # (e.g. _loaded_at) and uncomment the loaded_at_field + freshness blocks
+    # on each table below.
+
+    tables:
+
+      - name: customers
+        identifier: RAW_OLIST_CUSTOMERS
+        description: "Customer identifiers and geographic information. PK: customer_id (per-order). customer_unique_id identifies a person across orders."
+        # loaded_at_field: _loaded_at
+        # freshness:
+        #   warn_after: {count: 24, period: hour}
+        #   error_after: {count: 48, period: hour}
+
+      - name: orders
+        identifier: RAW_OLIST_ORDERS
+        description: "Order-level records including status and fulfillment timestamps. PK: order_id."
+
+      - name: order_items
+        identifier: RAW_OLIST_ORDER_ITEMS
+        description: "Individual products sold within each order. Composite PK: order_id + order_item_id."
+
+      - name: order_payments
+        identifier: RAW_OLIST_ORDER_PAYMENTS
+        description: "Payment transactions associated with orders. Composite PK: order_id + payment_sequential."
+
+      - name: order_reviews
+        identifier: RAW_OLIST_ORDER_REVIEWS
+        description: "Customer reviews and review scores for orders. Note: review_id can repeat across multiple order_ids in the source; the effective grain is (review_id, order_id). Deduped in Silver."
+
+      - name: products
+        identifier: RAW_OLIST_PRODUCTS
+        description: "Product attributes and category information. PK: product_id. Source contains typos in column names (product_name_lenght, product_description_lenght) — preserved in Bronze, corrected in Silver."
+
+      - name: sellers
+        identifier: RAW_OLIST_SELLERS
+        description: "Marketplace seller identifiers and geographic information. PK: seller_id."
+
+      - name: geolocation
+        identifier: RAW_OLIST_GEOLOCATION
+        description: "Brazilian ZIP-code-prefix geographic coordinates. Multiple rows per zip_code_prefix are expected (one per lat/lng observation); deduplication happens in Silver."
+
+      - name: product_category_translation
+        identifier: RAW_PRODUCT_CATEGORY_NAME_TRANSLATION
+        description: "Translation of Portuguese product category names into English. PK: product_category_name. Not all product categories in the products table are covered."
+
+
+  # ---------------------------------------------------------
+  # Olist Marketing Funnel Dataset
+  # ---------------------------------------------------------
+  - name: olist_marketing
+    description: "Raw Olist seller acquisition and marketing funnel data."
+    database: OLIST
+    schema: RAW
+
+    tables:
+
+      - name: marketing_qualified_leads
+        identifier: RAW_MARKETING_QUALIFIED_LEADS
+        description: "Marketing-qualified seller leads and their acquisition sources. PK: mql_id."
+
+      - name: marketing_closed_deals
+        identifier: RAW_MARKETING_CLOSED_DEALS
+        description: "Marketing leads that converted into Olist marketplace sellers. PK: mql_id. FK: seller_id → sellers (sellers acquired via marketing funnel; not all sellers appear here)."

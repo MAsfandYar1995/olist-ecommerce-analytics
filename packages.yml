@@ -1,0 +1,6 @@
+packages:
+  - package: dbt-labs/dbt_utils
+    version: 1.4.0
+
+  - package: Snowflake-Labs/dbt_semantic_view  # for snowflake semantic views/layer
+    version: 1.0.6
