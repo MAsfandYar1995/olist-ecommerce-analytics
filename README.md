@@ -2,6 +2,14 @@
 
 An end-to-end analytics project built with Snowflake, dbt and Power BI using the public Olist Brazilian e-commerce dataset.
 
+<p align="center">
+  <img src="assets/executive.png"
+       alt="Olist Power BI Executive Overview"
+       width="100%">
+</p>
+
+**Power BI Executive Overview:** marketplace sales, orders, average order value, delivery performance, customer reviews and marketing conversion in one reporting view.
+
 I built this project to go beyond a dashboard. The aim was to take the source data through a warehouse and dimensional model, add data quality checks, then use the finished model to answer specific business questions around fulfillment, sellers, customers and product categories.
 
 ## What I built
@@ -91,11 +99,35 @@ The purpose was to make the Gold models safe to analyze rather than treating suc
 
 ## Power BI dashboard
 
-The interactive Power BI report is included in the repository:
+I built the Power BI report as the main reporting layer for the project. It provides a broad view of marketplace performance, while the SQL analyses later in this README investigate narrower business questions in more depth.
 
-**[Open the PBIX file](olist_dashboard.pbix)**
+The report contains dedicated views for sales and products, fulfillment, customer reviews, and the Olist marketing funnel.
 
-I used Power BI for the broad reporting layer and kept the deeper investigations below in SQL. The five analyses are intended to answer narrower business questions that are easier to explain as a case study.
+**[Open the Power BI file](olist_dashboard.pbix)**
+
+### Sales & Product Performance
+
+![Olist Sales and Products Power BI Dashboard](assets/sales.png)
+
+This view tracks marketplace sales, order volume, product-category performance, seller geography and the highest-revenue sellers.
+
+### Fulfillment & Delivery Performance
+
+![Olist Fulfillment and Delivery Power BI Dashboard](assets/fulfillment.png)
+
+This page monitors delivery reliability, fulfillment-cycle timing, late orders, state-level performance and monthly changes in on-time delivery.
+
+### Customer Reviews
+
+![Olist Customer Reviews Power BI Dashboard](assets/customer_reviews.png)
+
+This view brings together review distribution, customer sentiment, review trends, delivery timeliness and the lowest-rated product categories.
+
+### Marketing Funnel & Lead Conversion
+
+![Olist Marketing Funnel Power BI Dashboard](assets/marketing.png)
+
+This page follows the Olist marketing funnel from MQLs through won deals and activated sellers, with conversion performance by lead source, lead type and sales representative.
 
 # Analytical deep dives
 
