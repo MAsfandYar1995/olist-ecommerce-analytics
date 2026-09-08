@@ -1,7 +1,10 @@
 # Olist E-commerce Analytics
 
-An end-to-end analytics project built with Snowflake, dbt and Power BI using the public Olist Brazilian e-commerce dataset.
+An end-to-end analytics project built with Snowflake, dbt and Power BI using real-world e-commerce and marketing datasets from Olist.
 
+I built this project to go beyond a dashboard. The aim was to take the source data through a warehouse and dimensional model, add data quality checks, then use the finished model to answer specific business questions around fulfillment, sellers, customers and product categories.
+
+&nbsp;
 <p align="center">
   <img src="assets/executive.png"
        alt="Olist Power BI Executive Overview"
@@ -9,8 +12,6 @@ An end-to-end analytics project built with Snowflake, dbt and Power BI using the
 </p>
 
 **Power BI Executive Overview:** marketplace sales, orders, average order value, delivery performance, customer reviews and marketing conversion in one reporting view.
-
-I built this project to go beyond a dashboard. The aim was to take the source data through a warehouse and dimensional model, add data quality checks, then use the finished model to answer specific business questions around fulfillment, sellers, customers and product categories.
 
 ## What I built
 
