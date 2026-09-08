@@ -9,7 +9,7 @@ I built this project to go beyond a dashboard. The aim was to take the source da
 The project follows a layered dbt structure:
 
 ```text
-Olist source data
+Olist source data (Ecommerce + Marketing)
       |
       v
 Snowflake raw tables
