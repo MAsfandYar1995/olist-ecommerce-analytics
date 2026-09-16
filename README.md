@@ -1,9 +1,14 @@
 # Olist E-commerce Analytics
 
-An end-to-end analytics project built with Snowflake, dbt and Power BI using real-world e-commerce and marketing datasets from Olist.
+## Project Overview
 
-I built this project to go beyond a dashboard. The aim was to take the source data through a warehouse and dimensional model, add data quality checks, then use the finished model to answer specific business questions around fulfillment, sellers, customers and product categories.
+This is an end-to-end e-commerce analytics project built with **Snowflake, dbt, SQL, and Power BI** using Olist's public e-commerce and marketing datasets. I built the project to take raw source data through a tested dimensional model and then use that model to investigate fulfillment, seller performance, customer retention, product categories, and marketplace risk.
 
+The analysis found that customer experience deteriorates sharply when deliveries are late: the poor-review rate rises from **9.22% for on-time orders to 32.23% when delivery is only 1-3 days late**, and reaches **67.55% at 4-7 days late**. Marketplace GMV is also highly concentrated, with just **544 of 3,095 sellers, or 17.58%, generating roughly 80% of GMV**. Within that commercially important group, **30 elevated-risk sellers generate 13.62% of total marketplace GMV**. Customer retention is another major opportunity: high-value one-time buyers represent **23.24% of customers but 57.94% of GMV**.
+
+These findings suggest three main priorities: reduce avoidable delivery lateness before delays become severe, prioritize operational intervention among commercially important high-risk sellers, and focus retention activity on recent high-value one-time buyers most likely to generate meaningful repeat revenue.
+
+The project combines a layered dbt warehouse, dimensional modeling, data-quality testing, a Power BI reporting layer, and SQL analytical deep dives rather than treating the dashboard as the final output.
 &nbsp;
 <p align="center">
   <img src="assets/executive.png"
